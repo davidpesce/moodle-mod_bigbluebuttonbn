@@ -60,7 +60,7 @@ function bigbluebuttonbn_broker_meeting_info($bbbsession, $params, $updatecache)
     $status["can_end"] = $canend["can_end"];
     $callbackresponse['status'] = $status;
     $callbackresponsedata = json_encode($callbackresponse);
-    return "{$params['callback']}({$callbackresponsedata});";
+    return $callbackresponsedata;
 }
 
 /**
@@ -734,7 +734,7 @@ function bigbluebuttonbn_broker_validate_parameters_message($params, $requiredpa
 }
 
 /**
- * Helper for definig rules for validating required parameters.
+ * Helper for defining rules for validating required parameters.
  */
 function bigbluebuttonbn_broker_required_parameters() {
     $params['server_ping'] = [
@@ -742,11 +742,10 @@ function bigbluebuttonbn_broker_required_parameters() {
         'id' => 'The meetingID must be specified.'
     ];
     $params['meeting_info'] = [
-        'callback' => 'This request must include a javascript callback.',
+        //'callback' => 'This request must include a javascript callback.',
         'id' => 'The meetingID must be specified.'
     ];
     $params['meeting_end'] = [
-        'callback' => 'This request must include a javascript callback.',
         'id' => 'The meetingID must be specified.'
     ];
     $params['recording_play'] = [

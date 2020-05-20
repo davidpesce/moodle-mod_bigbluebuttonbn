@@ -48,7 +48,7 @@ if (empty($params['action'])) {
 
 $error = bigbluebuttonbn_broker_validate_parameters($params);
 if (!empty($error)) {
-    header('HTTP/1.0 400 Bad Request. '.$error);
+    header('HTTP/1.0 400 Bad Request. '.$error.'here');
     return;
 }
 

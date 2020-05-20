@@ -9,3 +9,4 @@
 
 /vendor/*
 !/vendor/firebase/
+.DS_Store
