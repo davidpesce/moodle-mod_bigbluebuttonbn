@@ -22,8 +22,8 @@
  * @module mod_bigbluebuttonbn/recordings
 */
 
-define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/rooms', 'core/yui'],
-    function ($, mdlcfg, str, rooms, yui) {
+define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers', 'mod_bigbluebuttonbn/broker', 'core/yui'],
+    function ($, mdlcfg, str, helpers, broker, yui) {
 
         /**
          * Declare variables.
@@ -49,27 +49,35 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/rooms', 'core/
             * @param {object} dataobj
             */
             init: function (dataobj) {
+                var self = this;
                 bbbid = dataobj.bbbid;
                 datasource = mdlcfg.wwwroot + "/mod/bigbluebuttonbn/bbb_ajax.php?sesskey=" + mdlcfg.sesskey + "&";
-                var self = this;
                 var qs = "id=" + bbbid + "&action=recording_list_table";
                 $.getJSON(datasource + qs)
-                    .done(function (data) {
-                        var bbinfo = data.data;
-                        if (bbinfo.recordings_html === false &&
-                            (bbinfo.profile_features.indexOf('all') != -1 || bbinfo.profile_features.indexOf('showrecordings') != -1)) {
-                            self.locale = bbinfo.locale;
-                            self.datatable.columns = bbinfo.data.columns;
-                            self.datatable.data = self.datatableInitFormatDates(bbinfo.data.data);
-                            self.datatableInit();
+                    .done(function (bbinfo) {
+                        console.log(bbinfo);
+
+                        //Use below to trigger YUI table.
+                        //bbinfo.recordings_html = false;
+
+                        //This is all YUI table 'stuff'. Remove?
+                        if (bbinfo.recordings_html === false) {
+                            if (bbinfo.profile_features[0] === 'all' || bbinfo.profile_features[0] === 'showrecordings') {
+                                locale = bbinfo.locale;
+                                datatable.columns = bbinfo.data.columns;
+                                datatable.data = self.datatableInitFormatDates(bbinfo.data.data);
+                                self.datatableInit();
+                            }
                         }
                     });
+                //This displays the search form if YUI table is enabled.
                 if ($(SELECTORS.FORM_SEARCH_RECORDINGS).length) {
                     SELECTORS.FORM_SEARCH_RECORDINGS.click(function () {
-                        //
+                        //Put refactored code here.
                     });
                 }
 
+                //TODO - This needs to be refactored and put above.
                 var searchform = yui.one('#bigbluebuttonbn_recordings_searchform');
                 if (searchform) {
                     searchform.delegate('click', function (e) {
@@ -86,7 +94,7 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/rooms', 'core/
                         this.filterByText(value);
                     }, 'input[type=submit]', this);
                 }
-                M.mod_bigbluebuttonbn.helpers.init();
+                helpers.init();
             },
 
             datatableInitFormatDates: function (data) {
@@ -156,7 +164,7 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/rooms', 'core/
                         rowsPerPage: 10,
                         paginatorLocation: ['header', 'footer']
                     }).render('#bigbluebuttonbn_recordings_table');
-                    M.mod_bigbluebuttonbn.recordings.table = table;
+                    recordings.table = table;
                     return table;
                 });
             },
@@ -195,8 +203,8 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/rooms', 'core/
 
             recordingActionPerform: function (data) {
                 var self = this;
-                M.mod_bigbluebuttonbn.helpers.toggleSpinningWheelOn(data);
-                M.mod_bigbluebuttonbn.broker.recordingActionPerform(data);
+                helpers.toggleSpinningWheelOn(data);
+                broker.recordingActionPerform(data);
                 datasource.sendRequest({
                     request: "&id=" + this.bbbid + "&action=recording_list_table",
                     callback: {
@@ -287,8 +295,8 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/rooms', 'core/
                 inputtext.setAttribute('id', link.getAttribute('id'));
                 inputtext.setAttribute('value', text.getHTML());
                 inputtext.setAttribute('data-value', text.getHTML());
-                inputtext.on('keydown', M.mod_bigbluebuttonbn.recordings.recordingEditKeydown);
-                inputtext.on('focusout', M.mod_bigbluebuttonbn.recordings.recordingEditOnfocusout);
+                inputtext.on('keydown', this.recordingEditKeydown);
+                inputtext.on('focusout', this.recordingEditOnfocusout);
                 node.append(inputtext);
                 inputtext.focus().select();
             },
@@ -296,11 +304,11 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/rooms', 'core/
             recordingEditKeydown: function (event) {
                 var keyCode = event.which || event.keyCode;
                 if (keyCode == 13) {
-                    M.mod_bigbluebuttonbn.recordings.recordingEditPerform(event.currentTarget);
+                    this.recordingEditPerform(event.currentTarget);
                     return;
                 }
                 if (keyCode == 27) {
-                    M.mod_bigbluebuttonbn.recordings.recordingEditOnfocusout(event.currentTarget);
+                    this.recordingEditOnfocusout(event.currentTarget);
                 }
             },
 
@@ -324,7 +332,7 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/rooms', 'core/
             },
 
             recordingEditCompletion: function (data, failed) {
-                var elementid = M.mod_bigbluebuttonbn.helpers.elementId(data.action, data.target);
+                var elementid = helpers.elementId(data.action, data.target);
                 var link = Y.one('a#' + elementid + '-' + data.recordingid);
                 var node = link.ancestor('div');
                 var text = node.one('> span');
@@ -341,7 +349,7 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/rooms', 'core/
             recordingPlay: function (element) {
                 var nodeelement = Y.one(element);
                 if (nodeelement.getAttribute('data-href') === '') {
-                    M.mod_bigbluebuttonbn.helpers.alertError(
+                    helpers.alertError(
                         M.util.get_string('view_recording_format_errror_unreachable', 'bigbluebuttonbn')
                     );
                     return;
@@ -375,7 +383,7 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/rooms', 'core/
                     return confirmation;
                 }
                 // If it has associated links imported in a different course/activity, show that in confirmation dialog.
-                elementid = M.mod_bigbluebuttonbn.helpers.elementId(data.action, data.target);
+                elementid = helpers.elementId(data.action, data.target);
                 associatedLinks = Y.one('a#' + elementid + '-' + data.recordingid).get('dataset').links;
                 if (associatedLinks === 0) {
                     return confirmation;
@@ -410,14 +418,14 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/rooms', 'core/
                     return;
                 }
                 if (data.action == 'play') {
-                    M.mod_bigbluebuttonbn.helpers.toggleSpinningWheelOff(data);
+                    helpers.toggleSpinningWheelOff(data);
                     // Update url in window video to show the video.
                     this.windowVideoPlay.location.href = data.dataset.href;
                     return;
                 }
-                M.mod_bigbluebuttonbn.helpers.updateData(data);
-                M.mod_bigbluebuttonbn.helpers.toggleSpinningWheelOff(data);
-                M.mod_bigbluebuttonbn.helpers.updateId(data);
+                helpers.updateData(data);
+                helpers.toggleSpinningWheelOff(data);
+                helpers.updateId(data);
                 if (data.action === 'publish') {
                     this.recordingPublishCompletion(data.recordingid);
                     return;
@@ -429,8 +437,8 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/rooms', 'core/
             },
 
             recordingActionFailover: function (data) {
-                M.mod_bigbluebuttonbn.helpers.alertError(data.message);
-                M.mod_bigbluebuttonbn.helpers.toggleSpinningWheelOff(data);
+                helpers.alertError(data.message);
+                helpers.toggleSpinningWheelOff(data);
                 if (data.action === 'edit') {
                     this.recordingEditCompletion(data, true);
                 }
@@ -444,7 +452,7 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/rooms', 'core/
                     return;
                 }
                 preview.show();
-                M.mod_bigbluebuttonbn.helpers.reloadPreview(recordingid);
+                helpers.reloadPreview(recordingid);
             },
 
             recordingUnpublishCompletion: function (recordingid) {
@@ -464,8 +472,6 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/rooms', 'core/
             }
         };
 
-        Recordings.init = function (dataobj) {
-
-        };
+        return Recordings;
 
     });

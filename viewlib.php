@@ -123,21 +123,18 @@ function bigbluebuttonbn_view_render(&$bbbsession, $activity) {
 
     if ($enabledfeatures['showroom']) {
         $output .= bigbluebuttonbn_view_render_room($bbbsession, $activity, $jsvars);
-        //$PAGE->requires->yui_module('moodle-mod_bigbluebuttonbn-rooms', 'M.mod_bigbluebuttonbn.rooms.init', array($jsvars));
         $PAGE->requires->js_call_amd('mod_bigbluebuttonbn/rooms', 'init', array($jsvars));
     }
     if ($enabledfeatures['showrecordings']) {
         $output .= html_writer::start_tag('div', array('id' => 'bigbluebuttonbn_view_recordings'));
         $output .= bigbluebuttonbn_view_render_recording_section($bbbsession, $type, $enabledfeatures, $jsvars);
         $output .= html_writer::end_tag('div');
-        $PAGE->requires->yui_module('moodle-mod_bigbluebuttonbn-recordings',
-            'M.mod_bigbluebuttonbn.recordings.init', array($jsvars));
+        $PAGE->requires->js_call_amd('mod_bigbluebuttonbn/recordings', 'init', array($jsvars));
     } else if ($type == BIGBLUEBUTTONBN_TYPE_RECORDING_ONLY) {
         $recordingsdisabled = get_string('view_message_recordings_disabled', 'bigbluebuttonbn');
         $output .= bigbluebuttonbn_render_warning($recordingsdisabled, 'danger');
     }
     echo $output.html_writer::empty_tag('br').html_writer::empty_tag('br').html_writer::empty_tag('br');
-    //$PAGE->requires->yui_module('moodle-mod_bigbluebuttonbn-broker', 'M.mod_bigbluebuttonbn.broker.init', array($jsvars));
     $PAGE->requires->js_call_amd('mod_bigbluebuttonbn/broker', 'init', array($jsvars));
 }
 

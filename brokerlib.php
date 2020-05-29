@@ -794,8 +794,7 @@ function bigbluebuttonbn_broker_required_parameters() {
         'signed_parameters' => 'A JWT encoded string must be included as [signed_parameters].'
     ];
     $params['recording_list_table'] = [
-        'id' => 'The Bigbluebutton activity id must be specified.',
-        'callback' => 'This request must include a javascript callback.',
+        'id' => 'The Bigbluebutton activity id must be specified.'
     ];
     $params['meeting_events'] = [
         'bigbluebuttonbn' => 'The BigBlueButtonBN instance ID must be specified.'
@@ -899,6 +898,5 @@ function bigbluebuttonbn_broker_get_recording_data($bbbsession, $params, $enable
         'columns' => $columns,
         'data' => $data
     );
-    $callbackresponsedata = json_encode($tabledata);
-    return "{$params['callback']}({$callbackresponsedata});";
+    return json_encode($tabledata);
 }
