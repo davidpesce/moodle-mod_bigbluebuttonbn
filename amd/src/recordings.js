@@ -22,164 +22,52 @@
  * @module mod_bigbluebuttonbn/recordings
 */
 
-define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers', 'mod_bigbluebuttonbn/broker', 'core/yui'],
-    function ($, mdlcfg, str, helpers, broker, yui) {
+define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers',
+    'core/yui', 'core/modal_factory', 'core/modal_events'],
+    function ($, mdlcfg, str, Helpers, yui, ModalFactory, ModalEvents) {
 
         /**
          * Declare variables.
          */
         var datasource = null;
-        var datatable = {};
-        var locale = 'en';
-        var windowVideoPlay = null;
-        var table = null;
-        var bbbid = 0;
 
         /**
          * jQuery selectors.
          */
         var SELECTORS = {
             FORM_SEARCH_RECORDINGS: '#bigbluebuttonbn_recordings_searchform',
-            SEARCH_TEXT: '#searchtext'
+            SEARCH_TEXT: '#searchtext',
+            RECORDING_IMPORTED: 'data-imported'
         };
 
         var Recordings = {
             /**
             * Initialize recording display.
-            * @param {object} dataobj
             */
-            init: function (dataobj) {
+            init: function () {
                 var self = this;
-                bbbid = dataobj.bbbid;
-                datasource = mdlcfg.wwwroot + "/mod/bigbluebuttonbn/bbb_ajax.php?sesskey=" + mdlcfg.sesskey + "&";
-                var qs = "id=" + bbbid + "&action=recording_list_table";
-                $.getJSON(datasource + qs)
-                    .done(function (bbinfo) {
-                        console.log(bbinfo);
 
-                        //Use below to trigger YUI table.
-                        //bbinfo.recordings_html = false;
-
-                        //This is all YUI table 'stuff'. Remove?
-                        if (bbinfo.recordings_html === false) {
-                            if (bbinfo.profile_features[0] === 'all' || bbinfo.profile_features[0] === 'showrecordings') {
-                                locale = bbinfo.locale;
-                                datatable.columns = bbinfo.data.columns;
-                                datatable.data = self.datatableInitFormatDates(bbinfo.data.data);
-                                self.datatableInit();
-                            }
-                        }
+                //Add onclick event listeners to delete buttons
+                $('[id^=recording-delete-]').each(function (i, val) {
+                    $(val).click(function () {
+                        self.recordingDelete(val);
                     });
-                //This displays the search form if YUI table is enabled.
-                if ($(SELECTORS.FORM_SEARCH_RECORDINGS).length) {
-                    SELECTORS.FORM_SEARCH_RECORDINGS.click(function () {
-                        //Put refactored code here.
-                    });
-                }
-
-                //TODO - This needs to be refactored and put above.
-                var searchform = yui.one('#bigbluebuttonbn_recordings_searchform');
-                if (searchform) {
-                    searchform.delegate('click', function (e) {
-                        e.preventDefault();
-                        e.stopPropagation();
-
-                        var value = null;
-                        if (e.target.get('id') == 'searchsubmit') {
-                            value = yui.one('#searchtext').get('value');
-                        } else {
-                            yui.one('#searchtext').set('value', '');
-                        }
-
-                        this.filterByText(value);
-                    }, 'input[type=submit]', this);
-                }
-                helpers.init();
-            },
-
-            datatableInitFormatDates: function (data) {
-                for (var i = 0; i < data.length; i++) {
-                    var date = new Date(data[i].date);
-                    data[i].date = date.toLocaleDateString(this.locale, {
-                        weekday: 'long',
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                    });
-                }
-                return data;
-            },
-
-            initExtraLanguage: function (Y1) {
-                Y1.Intl.add(
-                    'datatable-paginator',
-                    Y1.config.lang,
-                    {
-                        first: M.util.get_string('view_recording_yui_first', 'bigbluebuttonbn'),
-                        prev: M.util.get_string('view_recording_yui_prev', 'bigbluebuttonbn'),
-                        next: M.util.get_string('view_recording_yui_next', 'bigbluebuttonbn'),
-                        last: M.util.get_string('view_recording_yui_last', 'bigbluebuttonbn'),
-                        goToLabel: M.util.get_string('view_recording_yui_page', 'bigbluebuttonbn'),
-                        goToAction: M.util.get_string('view_recording_yui_go', 'bigbluebuttonbn'),
-                        perPage: M.util.get_string('view_recording_yui_rows', 'bigbluebuttonbn'),
-                        showAll: M.util.get_string('view_recording_yui_show_all', 'bigbluebuttonbn')
-                    }
-                );
-            },
-
-            escapeRegex: function (value) {
-                return value.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, "\\$&");
-            },
-
-            filterByText: function (searchvalue) {
-                if (table) {
-                    table.set('data', datatable.data);
-                    if (searchvalue) {
-                        var tlist = table.data;
-                        var rsearch = new RegExp('<span>.*?' + this.escapeRegex(searchvalue) + '.*?</span>', 'i');
-                        var filterdata = tlist.filter({ asList: true }, function (item) {
-                            var name = item.get('recording');
-                            var description = item.get('description');
-                            return (
-                                (name && rsearch.test(name)) || (description && rsearch.test(description))
-                            );
-                        });
-                        table.set('data', filterdata);
-                    }
-                }
-            },
-
-            datatableInit: function () {
-                var columns = datatable.columns;
-                var data = datatable.data;
-                var func = this.initExtraLanguage;
-                yui({
-                    lang: this.locale
-                }).use('intl', 'datatable', 'datatable-sort', 'datatable-paginator', 'datatype-number', function (Y) {
-                    func(Y);
-                    var table = new Y.DataTable({
-                        width: "1195px",
-                        columns: columns,
-                        data: data,
-                        rowsPerPage: 10,
-                        paginatorLocation: ['header', 'footer']
-                    }).render('#bigbluebuttonbn_recordings_table');
-                    recordings.table = table;
-                    return table;
                 });
+
+                Helpers.init();
             },
 
             recordingElementPayload: function (element) {
-                var nodeelement = Y.one(element);
-                var node = nodeelement.ancestor('div');
+                var parent_div = $(element).closest('div');
                 return {
-                    action: nodeelement.getAttribute('data-action'),
-                    recordingid: node.getAttribute('data-recordingid'),
-                    meetingid: node.getAttribute('data-meetingid')
+                    action: $(element).attr('data-action'),
+                    recordingid: parent_div.attr('data-recordingid'),
+                    meetingid: parent_div.attr('data-meetingid')
                 };
             },
 
             recordingAction: function (element, confirmation, extras) {
+                var self = this;
                 var payload = this.recordingElementPayload(element);
                 for (var attrname in extras) {
                     payload[attrname] = extras[attrname];
@@ -189,36 +77,128 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers', 'mod
                     this.recordingActionPerform(payload);
                     return;
                 }
+
                 // Create the confirmation dialogue.
-                var confirm = new M.core.confirm({
-                    modal: true,
-                    centered: true,
-                    question: this.recordingConfirmationMessage(payload)
-                });
-                // If it is confirmed.
-                confirm.on('complete-yes', function () {
-                    this.recordingActionPerform(payload);
-                }, this);
+                ModalFactory.create({
+                    type: ModalFactory.types.SAVE_CANCEL,
+                    title: 'Are you sure?',
+                    body: self.recordingConfirmationMessage(payload)
+                })
+                    .then(function (modal) {
+                        modal.setSaveButtonText('Delete');
+                        modal.getRoot().on(ModalEvents.save, function () {
+                            self.recordingActionPerform(payload);
+                        });
+                        modal.show();
+                    });
             },
 
             recordingActionPerform: function (data) {
                 var self = this;
-                helpers.toggleSpinningWheelOn(data);
-                broker.recordingActionPerform(data);
-                datasource.sendRequest({
-                    request: "&id=" + this.bbbid + "&action=recording_list_table",
-                    callback: {
-                        success: function (data) {
-                            var bbinfo = data.data;
-                            if (bbinfo.recordings_html === false &&
-                                (bbinfo.profile_features.indexOf('all') != -1 || bbinfo.profile_features.indexOf('showrecordings') != -1)) {
-                                self.locale = bbinfo.locale;
-                                self.datatable.columns = bbinfo.data.columns;
-                                self.datatable.data = self.datatableInitFormatDates(bbinfo.data.data);
-                            }
+                var qs = "action=recording_" + data.action + "&id=" + data.recordingid + "&idx=" + data.meetingid;
+                qs += this.recordingActionMetaQS(data);
+                data.attempt = 1;
+                if (typeof data.attempts === 'undefined') {
+                    data.attempts = 5;
+                }
+                $.getJSON({
+                    url: datasource + qs
+                })
+                    .done(function (data) {
+                        // Something went wrong.
+                        if (!data.status) {
+                            return self.recordingActionFailover(data);
                         }
-                    }
-                });
+                        // There is no need for verification.
+                        if (typeof data.goalstate === 'undefined') {
+                            return self.recordingActionCompletion(data);
+                        }
+                        // Use the current response for verification.
+                        if (data.attempts <= 1) {
+                            return self.recordingActionPerformedComplete(data);
+                        }
+                        // Iterate the verification.
+                        return self.recordingActionPerformedValidate(data);
+                    })
+                    .fail(function (error) {
+                        data.message = error.message;
+                        return self.recordingActionFailover(data);
+                    });
+            },
+
+            recordingActionMetaQS: function (data) {
+                var qs = '';
+                if (typeof data.source !== 'undefined') {
+                    var meta = {};
+                    meta[data.source] = encodeURIComponent(data.goalstate);
+                    qs += "&meta=" + JSON.stringify(meta);
+                }
+                return qs;
+            },
+
+            recordingActionPerformedValidate: function (data) {
+                var self = this;
+                var qs = "action=recording_info&id=" + data.recordingid + "&idx=" + data.meetingid;
+                qs += this.recordingActionMetaQS(data);
+                $.getJSON({
+                    url: datasource + qs
+                })
+                    .done(function (data) {
+                        // Evaluates if the current attempt has been completed.
+                        if (self.recordingActionPerformedComplete(data)) {
+                            // It has been completed, so stop the action.
+                            return;
+                        }
+                        // Evaluates if more attempts have to be performed.
+                        if (data.attempt < data.attempts) {
+                            data.attempt += 1;
+                            setTimeout(((function () {
+                                return function () {
+                                    self.recordingActionPerformedValidate(data);
+                                };
+                            })(this)), (data.attempt - 1) * 1000);
+                            return;
+                        }
+                        // No more attempts to perform, it stops with failing over.
+                        data.message = str.get_string('view_error_action_not_completed', 'bigbluebuttonbn');
+                        self.recordingActionFailover(data);
+
+                    })
+                    .fail(function (error) {
+                        data.message = error.message;
+                        self.recordingActionFailover(data);
+                    });
+            },
+
+            recordingActionPerformedComplete: function (e, data) {
+                // Something went wrong.
+                if (typeof e.data[data.source] === 'undefined') {
+                    data.message = str.get_string('view_error_current_state_not_found', 'bigbluebuttonbn');
+                    self.recordingActionFailover(data);
+                    return true;
+                }
+                // Evaluates if the state is as expected.
+                if (e.data[data.source] === data.goalstate) {
+                    self.recordingActionCompletion(data);
+                    return true;
+                }
+                return false;
+            },
+
+            recordingCurrentState: function (action, data) {
+                if (action === 'publish' || action === 'unpublish') {
+                    return data.published;
+                }
+                if (action === 'delete') {
+                    return data.status;
+                }
+                if (action === 'protect' || action === 'unprotect') {
+                    return data.secured; // The broker responds with secured as protected is a reserverd word.
+                }
+                if (action === 'update') {
+                    return data.updated;
+                }
+                return null;
             },
 
             recordingPublish: function (element) {
@@ -332,7 +312,7 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers', 'mod
             },
 
             recordingEditCompletion: function (data, failed) {
-                var elementid = helpers.elementId(data.action, data.target);
+                var elementid = Helpers.elementId(data.action, data.target);
                 var link = Y.one('a#' + elementid + '-' + data.recordingid);
                 var node = link.ancestor('div');
                 var text = node.one('> span');
@@ -349,7 +329,7 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers', 'mod
             recordingPlay: function (element) {
                 var nodeelement = Y.one(element);
                 if (nodeelement.getAttribute('data-href') === '') {
-                    helpers.alertError(
+                    Helpers.alertError(
                         M.util.get_string('view_recording_format_errror_unreachable', 'bigbluebuttonbn')
                     );
                     return;
@@ -383,7 +363,7 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers', 'mod
                     return confirmation;
                 }
                 // If it has associated links imported in a different course/activity, show that in confirmation dialog.
-                elementid = helpers.elementId(data.action, data.target);
+                elementid = Helpers.elementId(data.action, data.target);
                 associatedLinks = Y.one('a#' + elementid + '-' + data.recordingid).get('dataset').links;
                 if (associatedLinks === 0) {
                     return confirmation;
@@ -418,14 +398,14 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers', 'mod
                     return;
                 }
                 if (data.action == 'play') {
-                    helpers.toggleSpinningWheelOff(data);
+                    Helpers.toggleSpinningWheelOff(data);
                     // Update url in window video to show the video.
                     this.windowVideoPlay.location.href = data.dataset.href;
                     return;
                 }
-                helpers.updateData(data);
-                helpers.toggleSpinningWheelOff(data);
-                helpers.updateId(data);
+                Helpers.updateData(data);
+                Helpers.toggleSpinningWheelOff(data);
+                Helpers.updateId(data);
                 if (data.action === 'publish') {
                     this.recordingPublishCompletion(data.recordingid);
                     return;
@@ -437,8 +417,8 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers', 'mod
             },
 
             recordingActionFailover: function (data) {
-                helpers.alertError(data.message);
-                helpers.toggleSpinningWheelOff(data);
+                Helpers.alertError(data.message);
+                Helpers.toggleSpinningWheelOff(data);
                 if (data.action === 'edit') {
                     this.recordingEditCompletion(data, true);
                 }
@@ -452,7 +432,7 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers', 'mod
                     return;
                 }
                 preview.show();
-                helpers.reloadPreview(recordingid);
+                Helpers.reloadPreview(recordingid);
             },
 
             recordingUnpublishCompletion: function (recordingid) {
@@ -466,9 +446,7 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers', 'mod
             },
 
             recordingIsImported: function (element) {
-                var nodeelement = Y.one(element);
-                var node = nodeelement.ancestor('tr');
-                return (node.getAttribute('data-imported') === 'true');
+                return $(element).prop(SELECTORS.RECORDING_IMPORTED);
             }
         };
 

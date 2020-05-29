@@ -22,8 +22,8 @@
  * @module mod_bigbluebuttonbn/broker
 */
 
-define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/rooms', 'mod_bigbluebuttonbn/recordings'],
-    function ($, mdlcfg, str, rooms, recordings) {
+define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/rooms'],
+    function ($, mdlcfg, str, rooms) {
 
         /**
          * Declare variables.
@@ -48,113 +48,6 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/rooms', 'mod_b
              */
             joinRedirect: function (joinUrl) {
                 window.open(joinUrl);
-            },
-
-            recordingActionPerform: function (data) {
-                var qs = "action=recording_" + data.action + "&id=" + data.recordingid + "&idx=" + data.meetingid;
-                qs += this.recordingActionMetaQS(data);
-                data.attempt = 1;
-                if (typeof data.attempts === 'undefined') {
-                    data.attempts = 5;
-                }
-                $.getJSON({
-                    url: datasource + qs
-                })
-                    .done(function (data) {
-                        // Something went wrong.
-                        if (!data.status) {
-                            return recordings.recordingActionFailover(data);
-                        }
-                        // There is no need for verification.
-                        if (typeof data.goalstate === 'undefined') {
-                            return recordings.recordingActionCompletion(data);
-                        }
-                        // Use the current response for verification.
-                        if (data.attempts <= 1) {
-                            return recordings.recordingActionPerformedComplete(data);
-                        }
-                        // Iterate the verification.
-                        return recordings.recordingActionPerformedValidate(data);
-                    })
-                    .fail(function (error) {
-                        data.message = error.message;
-                        return recordings.recordingActionFailover(data);
-                    });
-            },
-
-            recordingActionMetaQS: function (data) {
-                var qs = '';
-                if (typeof data.source !== 'undefined') {
-                    var meta = {};
-                    meta[data.source] = encodeURIComponent(data.goalstate);
-                    qs += "&meta=" + JSON.stringify(meta);
-                }
-                return qs;
-            },
-
-            recordingActionPerformedValidate: function (data) {
-                var self = this;
-                var qs = "action=recording_info&id=" + data.recordingid + "&idx=" + data.meetingid;
-                qs += this.recordingActionMetaQS(data);
-                $.getJSON({
-                    url: datasource + qs
-                })
-                    .done(function (data) {
-                        // Evaluates if the current attempt has been completed.
-                        if (self.recordingActionPerformedComplete(data)) {
-                            // It has been completed, so stop the action.
-                            return;
-                        }
-                        // Evaluates if more attempts have to be performed.
-                        if (data.attempt < data.attempts) {
-                            data.attempt += 1;
-                            setTimeout(((function () {
-                                return function () {
-                                    self.recordingActionPerformedValidate(data);
-                                };
-                            })(this)), (data.attempt - 1) * 1000);
-                            return;
-                        }
-                        // No more attempts to perform, it stops with failing over.
-                        data.message = str.get_string('view_error_action_not_completed', 'bigbluebuttonbn');
-                        recordings.recordingActionFailover(data);
-
-                    })
-                    .fail(function (error) {
-                        data.message = error.message;
-                        recordings.recordingActionFailover(data);
-                    });
-            },
-
-            recordingActionPerformedComplete: function (e, data) {
-                // Something went wrong.
-                if (typeof e.data[data.source] === 'undefined') {
-                    data.message = str.get_string('view_error_current_state_not_found', 'bigbluebuttonbn');
-                    recordings.recordingActionFailover(data);
-                    return true;
-                }
-                // Evaluates if the state is as expected.
-                if (e.data[data.source] === data.goalstate) {
-                    recordings.recordingActionCompletion(data);
-                    return true;
-                }
-                return false;
-            },
-
-            recordingCurrentState: function (action, data) {
-                if (action === 'publish' || action === 'unpublish') {
-                    return data.published;
-                }
-                if (action === 'delete') {
-                    return data.status;
-                }
-                if (action === 'protect' || action === 'unprotect') {
-                    return data.secured; // The broker responds with secured as protected is a reserverd word.
-                }
-                if (action === 'update') {
-                    return data.updated;
-                }
-                return null;
             },
 
             endMeeting: function () {

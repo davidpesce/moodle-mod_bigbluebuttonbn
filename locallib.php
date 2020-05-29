@@ -1856,13 +1856,14 @@ function bigbluebuttonbn_actionbar_render_button($recording, $data) {
         $target .= '-' . $data['target'];
     }
     $id = 'recording-' . $target . '-' . $recording['recordID'];
-    $onclick = 'M.mod_bigbluebuttonbn.recordings.recording' . ucfirst($data['action']) . '(this); return false;';
+    //$onclick = 'M.mod_bigbluebuttonbn.recordings.recording' . ucfirst($data['action']) . '(this); return false;';
+    $onclick = "require(['mod_bigbluebuttonbn/recordings'], function(recordings) { recordings.recordingDelete(this); });";
     if ((boolean) \mod_bigbluebuttonbn\locallib\config::get('recording_icons_enabled')) {
         // With icon for $manageaction.
         $iconattributes = array('id' => $id, 'class' => 'iconsmall');
         $linkattributes = array(
             'id' => $id,
-            'onclick' => $onclick,
+            //'onclick' => $onclick,
             'data-action' => $data['action'],
         );
         if (!isset($recording['imported'])) {

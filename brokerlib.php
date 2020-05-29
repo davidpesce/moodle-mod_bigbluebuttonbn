@@ -769,7 +769,6 @@ function bigbluebuttonbn_broker_required_parameters() {
         'id' => 'The recordingID must be specified.'
     ];
     $params['recording_delete'] = [
-        'callback' => 'This request must include a javascript callback.',
         'id' => 'The recordingID must be specified.'
     ];
     $params['recording_protect'] = [
