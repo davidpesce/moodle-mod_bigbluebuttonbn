@@ -46,6 +46,7 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers',
             */
             init: function () {
                 var self = this;
+                datasource = mdlcfg.wwwroot + "/mod/bigbluebuttonbn/bbb_ajax.php?sesskey=" + mdlcfg.sesskey + "&";
 
                 //Add onclick event listeners to delete buttons
                 $('[id^=recording-delete-]').each(function (i, val) {
