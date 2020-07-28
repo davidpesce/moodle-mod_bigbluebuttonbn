@@ -107,6 +107,7 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers',
                 })
                     .done(function (data) {
                         // Something went wrong.
+                        console.log(data);
                         if (!data.status) {
                             return self.recordingActionFailover(data);
                         }
@@ -122,6 +123,7 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers',
                         return self.recordingActionPerformedValidate(data);
                     })
                     .fail(function (error) {
+                        console.log(error);
                         data.message = error.message;
                         return self.recordingActionFailover(data);
                     });
