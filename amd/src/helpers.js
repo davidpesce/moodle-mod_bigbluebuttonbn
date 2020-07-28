@@ -22,8 +22,8 @@
  * @module mod_bigbluebuttonbn/helpers
 */
 
-define(['core/yui'],
-    function (yui) {
+define(['core/yui', 'core/notification'],
+    function (yui, Notification) {
         /**
          * Declare variables.
          */
@@ -230,11 +230,7 @@ define(['core/yui'],
                 if (typeof title == 'undefined') {
                     title = 'error';
                 }
-                var alert = new M.core.alert({
-                    title: M.util.get_string(title, 'moodle'),
-                    message: message
-                });
-                alert.show();
+                Notification.alert(title, message, 'Continue');
             }
         };
 
