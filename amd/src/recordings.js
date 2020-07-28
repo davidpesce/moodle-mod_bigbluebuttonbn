@@ -108,10 +108,9 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers',
                     url: datasource + qs
                 })
                     .done(function (data) {
+                        console.log('DONE: recordingActionPerform')
                         // Something went wrong.
-                        console.log(data);
                         if (!data.status) {
-                            console.log('failure:recordingActionPerform:!data.status');
                             return self.recordingActionFailover(data);
                         }
                         // There is no need for verification.
@@ -126,6 +125,7 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers',
                         return self.recordingActionPerformedValidate(data);
                     })
                     .fail(function (error) {
+                        console.log('FAIL: recordingActionPerform')
                         console.log(error);
                         data.message = error.message;
                         console.log(data);
