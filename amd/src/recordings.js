@@ -88,6 +88,7 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers',
                     .then(function (modal) {
                         modal.setSaveButtonText('Delete');
                         modal.getRoot().on(ModalEvents.save, function () {
+                            console.log('clicked delete.')
                             self.recordingActionPerform(payload);
                         });
                         modal.show();
