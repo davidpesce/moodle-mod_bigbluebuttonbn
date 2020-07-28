@@ -103,6 +103,7 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers',
                 if (typeof data.attempts === 'undefined') {
                     data.attempts = 5;
                 }
+                console.log(datasource + qs);
                 $.getJSON({
                     url: datasource + qs
                 })
