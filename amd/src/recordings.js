@@ -75,7 +75,7 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers',
                 }
                 // The action doesn't require confirmation.
                 if (!confirmation) {
-                    this.recordingActionPerform(payload);
+                    self.recordingActionPerform(payload);
                     return;
                 }
 
@@ -109,6 +109,7 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers',
                         // Something went wrong.
                         console.log(data);
                         if (!data.status) {
+                            console.log('failure:recordingActionPerform:!data.status');
                             return self.recordingActionFailover(data);
                         }
                         // There is no need for verification.
@@ -125,6 +126,7 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers',
                     .fail(function (error) {
                         console.log(error);
                         data.message = error.message;
+                        console.log('failure:recordingActionPerform:getJSON.failure');
                         return self.recordingActionFailover(data);
                     });
             },
@@ -164,11 +166,13 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers',
                         }
                         // No more attempts to perform, it stops with failing over.
                         data.message = str.get_string('view_error_action_not_completed', 'bigbluebuttonbn');
+                        console.log('failure:recordingActionPerformedValidate:nomoreattempts');
                         self.recordingActionFailover(data);
 
                     })
                     .fail(function (error) {
                         data.message = error.message;
+                        console.log('failure:recordingActionPerformedValidate:getJSONfailure');
                         self.recordingActionFailover(data);
                     });
             },
@@ -177,6 +181,7 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers',
                 // Something went wrong.
                 if (typeof e.data[data.source] === 'undefined') {
                     data.message = str.get_string('view_error_current_state_not_found', 'bigbluebuttonbn');
+                    console.log('failure:recordingActionPerformedComplete:somethingwentwrong');
                     self.recordingActionFailover(data);
                     return true;
                 }
