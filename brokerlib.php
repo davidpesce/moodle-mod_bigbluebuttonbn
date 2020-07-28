@@ -279,7 +279,7 @@ function bigbluebuttonbn_broker_recording_action($bbbsession, $params, $showroom
         );
     }
     $callbackresponsedata = json_encode($callbackresponse);
-    return "{$params['callback']}{$callbackresponsedata};";
+    return "{$params['callback']}{$callbackresponsedata}";
 }
 
 /**
