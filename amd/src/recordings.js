@@ -383,24 +383,45 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers',
 
             recordingActionCompletion: function (data) {
                 var container, table, row;
-                if (data.action == 'delete') {
-                    row = Y.one('div#recording-actionbar-' + data.recordingid).ancestor('td').ancestor('tr');
-                    table = row.ancestor('tbody');
-                    if (table.all('tr').size() == 1) {
-                        container = Y.one('#bigbluebuttonbn_view_recordings_content');
-                        container.prepend('<span>' + M.util.get_string('view_message_norecordings', 'bigbluebuttonbn') + '</span>');
-                        container.one('#bigbluebuttonbn_recordings_table').remove();
-                        return;
+                var stringsToRetrieve = [
+                    {
+                        key: 'view_message_norecordings',
+                        component: 'bigbluebuttonbn'
                     }
-                    row.remove();
-                    return;
+                ];
+
+                if (data.action === 'delete') {
+                    str.get_strings(stringsToRetrieve)
+                        .done(function (s) {
+                            //row = Y.one('div#recording-actionbar-' + data.recordingid).ancestor('td').ancestor('tr');
+                            row = $('div#recording-actionbar-' + data.recordingid).closest('td').closest('tr');
+
+                            //table = row.ancestor('tbody');
+                            table = row.closest('tbody');
+
+                            //if (table.all('tr').size() === 1) {
+                            if (table.children('tr').length) {
+                                //container = Y.one('#bigbluebuttonbn_view_recordings_content');
+                                container = $('#bigbluebuttonbn_view_recordings_content');
+
+                                //container.prepend('<span>' + s + '</span>');
+                                container.before('<span>' + s + '</span>');
+
+                                //container.one('#bigbluebuttonbn_recordings_table').remove();
+                                $('#bigbluebuttonbn_recordings_table').remove();
+                                return;
+                            }
+                            row.remove();
+                            return;
+                        });
+
                 }
-                if (data.action == 'import') {
+                if (data.action === 'import') {
                     row = Y.one('div#recording-actionbar-' + data.recordingid).ancestor('td').ancestor('tr');
                     row.remove();
                     return;
                 }
-                if (data.action == 'play') {
+                if (data.action === 'play') {
                     Helpers.toggleSpinningWheelOff(data);
                     // Update url in window video to show the video.
                     this.windowVideoPlay.location.href = data.dataset.href;
