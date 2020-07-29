@@ -32,7 +32,7 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers',
         var datasource = null;
 
         /**
-         * jQuery selectors.
+         * jQuery selectors for easy reference.
          */
         var SELECTORS = {
             FORM_SEARCH_RECORDINGS: '#bigbluebuttonbn_recordings_searchform',
@@ -42,7 +42,7 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers',
 
         var Recordings = {
             /**
-            * Initialize recording display.
+            * Initialize recording display. Set onclick handlers for publish, unpublish, delete, protect.
             */
             init: function () {
                 var self = this;
@@ -58,6 +58,12 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers',
                 Helpers.init();
             },
 
+            /**
+             * Obtain and return the JQuery objects related to the action performed.
+             *
+             * @param {jQuery} element
+             * @returns {{action: jQuery, meetingid: jQuery, recordingid: jQuery}}
+             */
             recordingElementPayload: function (element) {
                 var parent_div = $(element).closest('div');
                 return {
@@ -67,6 +73,13 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers',
                 };
             },
 
+            /**
+             * Determine the requested action and display confirmation (if needed).
+             *
+             * @param {jQuery} element
+             * @param {boolean} confirmation
+             * @param {Object} extras
+             */
             recordingAction: function (element, confirmation, extras) {
                 var self = this;
                 var payload = this.recordingElementPayload(element);
@@ -88,13 +101,17 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers',
                     .then(function (modal) {
                         modal.setSaveButtonText('Delete');
                         modal.getRoot().on(ModalEvents.save, function () {
-                            console.log('clicked delete.')
                             self.recordingActionPerform(payload);
                         });
                         modal.show();
                     });
             },
 
+            /**
+             * Perform the requested recording action (delete, publish/unpublish, update, or protect.
+             *
+             * @param {Object} data
+             */
             recordingActionPerform: function (data) {
                 var self = this;
                 var qs = "action=recording_" + data.action + "&id=" + data.recordingid + "&idx=" + data.meetingid;
@@ -103,33 +120,34 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers',
                 if (typeof data.attempts === 'undefined') {
                     data.attempts = 5;
                 }
-                console.log(datasource + qs);
                 $.getJSON({
                     url: datasource + qs
                 })
-                    .done(function (data) {
-                        console.log('DONE: recordingActionPerform')
-                        // Something went wrong.
-                        if (!data.status) {
-                            return self.recordingActionFailover(data);
-                        }
+                    .done(function (response) {
+                        console.log('DONE: recordingActionPerform');
                         // There is no need for verification.
                         if (typeof data.goalstate === 'undefined') {
                             return self.recordingActionCompletion(data);
                         }
                         // Use the current response for verification.
                         if (data.attempts <= 1) {
-                            return self.recordingActionPerformedComplete(data);
+                            return self.recordingActionPerformedComplete(response, data);
                         }
                         // Iterate the verification.
                         return self.recordingActionPerformedValidate(data);
                     })
-                    .fail(function (jqXHR, textStatus, error) {
+                    .fail(function (jqXHR, textStatus) {
                         data.message = "Request failed: " + textStatus + " responseText: " + jqXHR.responseText;
                         return self.recordingActionFailover(data);
                     });
             },
 
+            /**
+             * Gathers additional metadata to be included in query string.
+             *
+             * @param {Object} data
+             * @returns {string}
+             */
             recordingActionMetaQS: function (data) {
                 var qs = '';
                 if (typeof data.source !== 'undefined') {
@@ -140,6 +158,10 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers',
                 return qs;
             },
 
+            /**
+             *
+             * @param {Object} data
+             */
             recordingActionPerformedValidate: function (data) {
                 var self = this;
                 var qs = "action=recording_info&id=" + data.recordingid + "&idx=" + data.meetingid;
@@ -147,9 +169,9 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers',
                 $.getJSON({
                     url: datasource + qs
                 })
-                    .done(function (data) {
+                    .done(function (response) {
                         // Evaluates if the current attempt has been completed.
-                        if (self.recordingActionPerformedComplete(data)) {
+                        if (self.recordingActionPerformedComplete(response, data)) {
                             // It has been completed, so stop the action.
                             return;
                         }
@@ -176,6 +198,13 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers',
                     });
             },
 
+            /**
+             * Determines if the action performed has completed.
+             *
+             * @param e
+             * @param {Object} data
+             * @returns {boolean}
+             */
             recordingActionPerformedComplete: function (e, data) {
                 // Something went wrong.
                 if (typeof e.data[data.source] === 'undefined') {
@@ -192,6 +221,13 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers',
                 return false;
             },
 
+            /**
+             * Returns the current state of a recording based on action.
+             *
+             * @param {string} action - publish, unpublish, delete, protect, update
+             * @param {Object} data
+             * @returns {null|Item.updated|string|boolean|*}
+             */
             recordingCurrentState: function (action, data) {
                 if (action === 'publish' || action === 'unpublish') {
                     return data.published;
@@ -200,7 +236,7 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers',
                     return data.status;
                 }
                 if (action === 'protect' || action === 'unprotect') {
-                    return data.secured; // The broker responds with secured as protected is a reserverd word.
+                    return data.secured; // The broker responds with secured as protected is a reserved word.
                 }
                 if (action === 'update') {
                     return data.updated;
@@ -240,6 +276,11 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers',
                 this.recordingAction(element, false, extras);
             },
 
+            /**
+             * Initiates the recording delete request.
+             *
+             * @param {jQuery} element
+             */
             recordingDelete: function (element) {
                 var extras = {
                     source: 'found',
@@ -355,36 +396,76 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers',
                 this.recordingAction(element, false, extras);
             },
 
+            /**
+             * Return appropriate message to display in confirmation dialog.
+             *
+             * @param data
+             * @returns {string|*}
+             */
             recordingConfirmationMessage: function (data) {
                 var confirmation, recordingType, elementid, associatedLinks, confirmationWarning;
-                confirmation = M.util.get_string('view_recording_' + data.action + '_confirmation', 'bigbluebuttonbn');
-                if (typeof confirmation === 'undefined') {
-                    return '';
-                }
-                recordingType = M.util.get_string('view_recording', 'bigbluebuttonbn');
-                if (Y.one('#playbacks-' + data.recordingid).get('dataset').imported === 'true') {
-                    recordingType = M.util.get_string('view_recording_link', 'bigbluebuttonbn');
-                }
-                confirmation = confirmation.replace("{$a}", recordingType);
-                if (data.action === 'import') {
-                    return confirmation;
-                }
-                // If it has associated links imported in a different course/activity, show that in confirmation dialog.
-                elementid = Helpers.elementId(data.action, data.target);
-                associatedLinks = Y.one('a#' + elementid + '-' + data.recordingid).get('dataset').links;
-                if (associatedLinks === 0) {
-                    return confirmation;
-                }
-                confirmationWarning = M.util.get_string('view_recording_' + data.action + '_confirmation_warning_p',
-                    'bigbluebuttonbn');
-                if (associatedLinks == 1) {
-                    confirmationWarning = M.util.get_string('view_recording_' + data.action + '_confirmation_warning_s',
-                        'bigbluebuttonbn');
-                }
-                confirmationWarning = confirmationWarning.replace("{$a}", associatedLinks) + '. ';
-                return confirmationWarning + '\n\n' + confirmation;
+                var stringsToRetrieve = [
+                    {
+                        key: 'view_recording_' + data.action + '_confirmation',
+                        component: 'bigbluebuttonbn'
+                    },
+                    {
+                        key: 'view_recording',
+                        component: 'bigbluebuttonbn'
+                    },
+                    {
+                        key: 'view_recording_link',
+                        component: 'bigbluebuttonbn'
+                    }
+                    ,
+                    {
+                        key: 'view_recording_' + data.action + '_confirmation_warning_p',
+                        component: 'bigbluebuttonbn'
+                    }
+                    ,
+                    {
+                        key: 'view_recording_' + data.action + '_confirmation_warning_s',
+                        component: 'bigbluebuttonbn'
+                    }
+                ];
+                str.get_strings(stringsToRetrieve)
+                    .done(function (s) {
+                        confirmation = s[0];
+                        if (typeof confirmation === 'undefined') {
+                            return '';
+                        }
+
+                        recordingType = s[1];
+                        if (Y.one('#playbacks-' + data.recordingid).get('dataset').imported === 'true') {
+                            recordingType = s[2];
+                        }
+
+                        confirmation = confirmation.replace("{$a}", recordingType);
+                        if (data.action === 'import') {
+                            return confirmation;
+                        }
+                        // If it has associated links imported in a different course/activity, show that in confirmation dialog.
+                        elementid = Helpers.elementId(data.action, data.target);
+                        associatedLinks = Y.one('a#' + elementid + '-' + data.recordingid).get('dataset').links;
+                        if (associatedLinks === 0) {
+                            return confirmation;
+                        }
+
+                        confirmationWarning = s[3];
+                        if (associatedLinks === 1) {
+                            confirmationWarning = s[4];
+                        }
+
+                        confirmationWarning = confirmationWarning.replace("{$a}", associatedLinks) + '. ';
+                        return confirmationWarning + '\n\n' + confirmation;
+                    });
             },
 
+            /**
+             * Refreshes/clears the DOM after an action is performed.
+             *
+             * @param {Object} data
+             */
             recordingActionCompletion: function (data) {
                 var container, table, row;
                 var stringsToRetrieve = [
@@ -473,11 +554,16 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers',
                 preview.hide();
             },
 
+            /**
+             * Determines if recording was imported.
+             *
+             * @param {jQuery} element
+             * @returns {jQuery}
+             */
             recordingIsImported: function (element) {
                 return $(element).prop(SELECTORS.RECORDING_IMPORTED);
             }
         };
 
         return Recordings;
-
     });
