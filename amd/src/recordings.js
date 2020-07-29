@@ -209,14 +209,14 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers',
             recordingActionPerformedComplete: function (e, data) {
                 console.log(e);
                 // Something went wrong.
-                if (typeof e.data[data.source] === 'undefined') {
+                if (typeof e[data.source] === 'undefined') {
                     data.message = str.get_string('view_error_current_state_not_found', 'bigbluebuttonbn');
                     console.log('failure:recordingActionPerformedComplete:somethingwentwrong');
                     self.recordingActionFailover(data);
                     return true;
                 }
                 // Evaluates if the state is as expected.
-                if (e.data[data.source] === data.goalstate) {
+                if (e[data.source] === data.goalstate) {
                     self.recordingActionCompletion(data);
                     return true;
                 }
