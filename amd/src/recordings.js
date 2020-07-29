@@ -193,7 +193,7 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers',
                     })
                     .fail(function (error) {
                         data.message = error.message;
-                        console.log('failure:recordingActionPerformedValidate:getJSONfailure');
+                        console.log(error + 'failure:recordingActionPerformedValidate:getJSONfailure');
                         self.recordingActionFailover(data);
                     });
             },
