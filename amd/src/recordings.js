@@ -432,7 +432,7 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers',
                     return;
                 }
                 Helpers.updateData(data);
-                Helpers.toggleSpinningWheelOff(data);
+                //Helpers.toggleSpinningWheelOff(data);
                 Helpers.updateId(data);
                 if (data.action === 'publish') {
                     this.recordingPublishCompletion(data.recordingid);

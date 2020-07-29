@@ -150,12 +150,12 @@ define(['core/yui', 'core/notification'],
 
             updateId: function (data) {
                 var action, elementid, link, button, id;
-                action = this.elementActionReversed[data.action];
+                action = elementActionReversed[data.action];
                 if (action === data.action) {
                     return;
                 }
                 elementid = this.elementId(data.action, data.target);
-                link = Y.one('a#' + elementid + '-' + data.recordingid);
+                link = yui.one('a#' + elementid + '-' + data.recordingid);
                 id = '' + elementid.replace(data.action, action) + '-' + data.recordingid;
                 link.setAttribute('id', id);
                 button = link.one('> i');
