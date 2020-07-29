@@ -207,6 +207,7 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers',
              * @returns {boolean}
              */
             recordingActionPerformedComplete: function (e, data) {
+                var self = this;
                 console.log("e value:");
                 console.log(e);
 
