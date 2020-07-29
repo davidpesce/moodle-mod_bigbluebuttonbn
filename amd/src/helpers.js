@@ -81,7 +81,7 @@ define(['core/yui', 'core/notification'],
             toggleSpinningWheelOff: function (data) {
                 var elementid, link, button;
                 elementid = this.elementId(data.action, data.target);
-                link = Y.one('a#' + elementid + '-' + data.recordingid);
+                link = yui.one('a#' + elementid + '-' + data.recordingid);
                 link.setAttribute('onclick', link.getAttribute('data-onclick'));
                 link.removeAttribute('data-onclick');
                 button = link.one('> i');
