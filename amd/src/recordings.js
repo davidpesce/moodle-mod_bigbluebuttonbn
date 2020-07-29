@@ -207,7 +207,11 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers',
              * @returns {boolean}
              */
             recordingActionPerformedComplete: function (e, data) {
+                console.log("e value:");
                 console.log(e);
+
+                console.log("data value:");
+                console.log(data);
                 // Something went wrong.
                 if (typeof e[data.source] === 'undefined') {
                     data.message = str.get_string('view_error_current_state_not_found', 'bigbluebuttonbn');
