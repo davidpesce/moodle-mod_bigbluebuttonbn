@@ -185,7 +185,7 @@ function bigbluebuttonbn_broker_recording_info($bbbsession, $params, $showroom) 
             $callbackresponse = bigbluebuttonbn_broker_recording_info_current($recordings[$params['id']], $params);
         }
         $callbackresponsedata = json_encode($callbackresponse);
-        return "{$params['callback']}({$callbackresponsedata});";
+        return "{$params['callback']}{$callbackresponsedata}";
     }
     // As the recordingid was not identified as imported recording link, look up for a real recording.
     $recordings = bigbluebuttonbn_get_recordings_array($params['idx'], $params['id']);
@@ -194,7 +194,7 @@ function bigbluebuttonbn_broker_recording_info($bbbsession, $params, $showroom) 
         $callbackresponse = bigbluebuttonbn_broker_recording_info_current($recordings[$params['id']], $params);
     }
     $callbackresponsedata = json_encode($callbackresponse);
-    return "{$params['callback']}({$callbackresponsedata});";
+    return "{$params['callback']}{$callbackresponsedata}";
 }
 
 /**
