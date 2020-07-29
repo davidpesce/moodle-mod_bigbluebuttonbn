@@ -124,7 +124,6 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers',
                     url: datasource + qs
                 })
                     .done(function (response) {
-                        console.log('DONE: recordingActionPerform');
                         // There is no need for verification.
                         if (typeof data.goalstate === 'undefined') {
                             return self.recordingActionCompletion(data);
@@ -187,14 +186,11 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers',
                         }
                         // No more attempts to perform, it stops with failing over.
                         data.message = str.get_string('view_error_action_not_completed', 'bigbluebuttonbn');
-                        console.log('failure:recordingActionPerformedValidate:nomoreattempts');
                         self.recordingActionFailover(data);
 
                     })
                     .fail(function (jqXHR, textStatus) {
                         data.message = "Request failed: " + textStatus + " responseText: " + jqXHR.responseText;
-                        console.log(data.message);
-                        console.log('failure:recordingActionPerformedValidate:getJSONfailure');
                         self.recordingActionFailover(data);
                     });
             },
@@ -208,15 +204,9 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers',
              */
             recordingActionPerformedComplete: function (e, data) {
                 var self = this;
-                console.log("e value:");
-                console.log(e);
-
-                console.log("data value:");
-                console.log(data);
                 // Something went wrong.
                 if (typeof e[data.source] === 'undefined') {
                     data.message = str.get_string('view_error_current_state_not_found', 'bigbluebuttonbn');
-                    console.log('failure:recordingActionPerformedComplete:somethingwentwrong');
                     self.recordingActionFailover(data);
                     return true;
                 }

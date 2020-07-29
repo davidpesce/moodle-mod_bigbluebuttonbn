@@ -112,8 +112,6 @@ define(['core/yui', 'core/notification'],
             },
 
             updateData: function (data) {
-                console.log('updateData: data object');
-                console.log(data);
                 var action, elementid, link, linkdataonclick, button, buttondatatext, buttondatatag;
                 action = elementActionReversed[data.action];
                 if (action === data.action) {
