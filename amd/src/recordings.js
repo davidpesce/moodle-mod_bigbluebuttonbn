@@ -184,7 +184,7 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers',
                 })
                     .done(function (response) {
                         // Evaluates if the current attempt has been completed.
-                        console.log(self.recordingActionPerformedComplete(response, data));
+                        //console.log(self.recordingActionPerformedComplete(response, data));
                         if (self.recordingActionPerformedComplete(response, data)) {
                             // It has been completed, so stop the action.
                             return;
@@ -229,6 +229,7 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers',
                     .done(function (s) {
                         console.log('responsestate: ' + responsestate[data.source]);
                         console.log('goalstate: ' + data.goalstate);
+                        console.log(typeof responsestate[data.source]);
                         // Something went wrong.
                         if (typeof responsestate[data.source] === 'undefined') {
                             data.message = s[0];
