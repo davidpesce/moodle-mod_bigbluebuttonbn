@@ -69,6 +69,7 @@ define(['jquery', 'core/yui', 'core/notification', 'core/str'],
                         console.log(elementid);
 
                         link = $('#' + elementid + '-' + data.recordingid);
+                        console.log('#' + elementid + '-' + data.recordingid);
                         console.log(link.length);
 
                         link.attr('data-action', reversedaction);
