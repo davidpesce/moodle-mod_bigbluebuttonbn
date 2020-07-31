@@ -43,6 +43,11 @@ define(['jquery', 'core/yui', 'core/notification', 'core/str'],
                 elementActionReversed = this.initElementActionReversed();
             },
 
+            /**
+             * Update the DOM
+             *
+             * @param {Object} data
+             */
             updateData: function (data) {
                 var self = this;
                 var action, elementid, link, linkdataonclick, button, buttondatatext, buttondatatag;
@@ -64,9 +69,9 @@ define(['jquery', 'core/yui', 'core/notification', 'core/str'],
                         link = $('#' + elementid + '-' + data.recordingid);
                         link.attr('data-action', action);
 
-                        linkdataonclick = link.attr('data-onclick').replace(self.capitalize(data.action), self.capitalize(action));
-
-                        link.attr('data-onclick', linkdataonclick);
+                        //linkdataonclick = link.attr('data-onclick').replace(self.capitalize(data.action), self.capitalize(action));
+                        //link.attr('data-onclick', linkdataonclick);
+                        
                         buttondatatext = s[0];
                         buttondatatag = elementTag[action];
 
