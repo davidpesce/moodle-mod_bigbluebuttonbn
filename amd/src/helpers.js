@@ -59,6 +59,7 @@ define(['jquery', 'core/yui', 'core/notification', 'core/str'],
                 Str.get_strings(stringsToRetrieve)
                     .done(function (s) {
                         elementid = self.elementId(data.action, data.target);
+                        console.log(elementid);
                         link = $('a#' + elementid + '-' + data.recordingid);
 
                         link.attr('data-action', action);
@@ -175,7 +176,7 @@ define(['jquery', 'core/yui', 'core/notification', 'core/str'],
 
             alertError: function (message, title) {
                 if (typeof title == 'undefined') {
-                    title = 'error';
+                    title = 'Error';
                 }
                 Notification.alert(title, message, 'Continue');
             }
