@@ -518,13 +518,11 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers',
                     return;
                 }
                 if (data.action === 'play') {
-                    Helpers.toggleSpinningWheelOff(data);
                     // Update url in window video to show the video.
                     this.windowVideoPlay.location.href = data.dataset.href;
                     return;
                 }
                 Helpers.updateData(data);
-                //Helpers.toggleSpinningWheelOff(data);
                 Helpers.updateId(data);
                 if (data.action === 'publish') {
                     this.recordingPublishCompletion(data.recordingid);
@@ -538,7 +536,6 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers',
 
             recordingActionFailover: function (data) {
                 Helpers.alertError(data.message);
-                Helpers.toggleSpinningWheelOff(data);
                 if (data.action === 'edit') {
                     this.recordingEditCompletion(data, true);
                 }
