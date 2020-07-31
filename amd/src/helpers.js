@@ -22,8 +22,8 @@
  * @module mod_bigbluebuttonbn/helpers
 */
 
-define(['core/yui', 'core/notification'],
-    function (yui, Notification) {
+define(['jquery', 'core/yui', 'core/notification', 'core/str'],
+    function ($, yui, Notification, Str) {
         /**
          * Declare variables.
          */
@@ -112,27 +112,41 @@ define(['core/yui', 'core/notification'],
             },
 
             updateData: function (data) {
+                var self = this;
                 var action, elementid, link, linkdataonclick, button, buttondatatext, buttondatatag;
                 action = elementActionReversed[data.action];
                 if (action === data.action) {
                     return;
                 }
-                elementid = this.elementId(data.action, data.target);
-                link = yui.one('a#' + elementid + '-' + data.recordingid);
-                link.setAttribute('data-action', action);
-                linkdataonclick = link.getAttribute('data-onclick').replace(this.capitalize(data.action), this.capitalize(action));
-                link.setAttribute('data-onclick', linkdataonclick);
-                buttondatatext = M.util.get_string('view_recording_list_actionbar_' + action, 'bigbluebuttonbn');
-                buttondatatag = this.elementTag[action];
-                button = link.one('> i');
-                if (button === null) {
-                    // For backward compatibility.
-                    this.updateDataCompatible(link.one('> img'), this.elementTag[data.action], buttondatatag, buttondatatext);
-                    return;
-                }
-                button.setAttribute('data-aria-label', buttondatatext);
-                button.setAttribute('data-title', buttondatatext);
-                button.setAttribute('data-class', this.elementFaClass[action]);
+                var stringsToRetrieve = [
+                    {
+                        key: 'view_recording_list_actionbar_' + action,
+                        component: 'bigbluebuttonbn'
+                    }
+                ];
+                Str.get_strings(stringsToRetrieve)
+                    .done(function (s) {
+                        elementid = self.elementId(data.action, data.target);
+                        link = $('a#' + elementid + '-' + data.recordingid);
+                        link.attr('data-action', action);
+
+                        linkdataonclick = link.attr('data-onclick').replace(self.capitalize(data.action), self.capitalize(action));
+
+                        link.attr('data-onclick', linkdataonclick);
+                        buttondatatext = s[0];
+                        buttondatatag = elementTag[action];
+
+                        button = link.find('i');
+                        if (button === null) {
+                            // For backward compatibility.
+                            this.updateDataCompatible(link.find('img'), elementTag[data.action], buttondatatag, buttondatatext);
+                            return;
+                        }
+                        button.attr('data-aria-label', buttondatatext);
+                        button.attr('data-title', buttondatatext);
+                        button.attr('data-class', elementFaClass[action]);
+
+                    });
             },
 
             updateDataCompatible: function (button, action, buttondatatag, buttondatatext) {
