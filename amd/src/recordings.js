@@ -227,7 +227,8 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers',
                 ];
                 str.get_strings(stringsToRetrieve)
                     .done(function (s) {
-                        console.log(responsestate[data.source]);
+                        console.log('responsestate: ' + responsestate[data.source]);
+                        console.log('goalstate: ' + data.goalstate);
                         // Something went wrong.
                         if (typeof responsestate[data.source] === 'undefined') {
                             data.message = s[0];
