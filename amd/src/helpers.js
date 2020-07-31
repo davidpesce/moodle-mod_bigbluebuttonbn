@@ -83,9 +83,9 @@ define(['jquery', 'core/yui', 'core/notification', 'core/str'],
                             this.updateDataCompatible(link.find('img'), elementTag[data.action], buttondatatag, buttondatatext);
                             return;
                         }
-                        button.attr('data-aria-label', buttondatatext);
-                        button.attr('data-title', buttondatatext);
-                        button.attr('data-class', elementFaClass[reversedaction]);
+                        button.attr('aria-label', buttondatatext);
+                        button.attr('title', buttondatatext);
+                        button.attr('class', elementFaClass[reversedaction]);
                     });
             },
 
