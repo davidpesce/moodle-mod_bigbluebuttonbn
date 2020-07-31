@@ -103,12 +103,12 @@ define(['jquery', 'core/yui', 'core/notification', 'core/str'],
                     // Button doesn't have an icon.
                     return;
                 }
-                button.setAttribute('alt', button.getAttribute('data-alt'));
-                button.removeAttribute('data-alt');
-                button.setAttribute('title', button.getAttribute('data-title'));
-                button.removeAttribute('data-title');
-                button.setAttribute('src', button.getAttribute('data-src'));
-                button.removeAttribute('data-src');
+                button.attr('alt', button.attr('data-alt'));
+                button.removeAttr('data-alt');
+                button.attr('title', button.attr('data-title'));
+                button.removeAttr('data-title');
+                button.attr('src', button.attr('data-src'));
+                button.removeAttr('data-src');
             },
 
             updateData: function (data) {
@@ -154,10 +154,10 @@ define(['jquery', 'core/yui', 'core/notification', 'core/str'],
                     // Button doesn't have an icon.
                     return;
                 }
-                var buttondatasrc = button.getAttribute('data-src');
-                button.setAttribute('data-alt', buttondatatext);
-                button.setAttribute('data-title', buttondatatext);
-                button.setAttribute('data-src', buttondatasrc.replace(buttondatatag, action));
+                var buttondatasrc = button.attr('data-src');
+                button.attr('data-alt', buttondatatext);
+                button.attr('data-title', buttondatatext);
+                button.attr('data-src', buttondatasrc.replace(buttondatatag, action));
             },
 
             updateId: function (data) {
@@ -167,15 +167,15 @@ define(['jquery', 'core/yui', 'core/notification', 'core/str'],
                     return;
                 }
                 elementid = this.elementId(data.action, data.target);
-                link = yui.one('a#' + elementid + '-' + data.recordingid);
+                link = $('a#' + elementid + '-' + data.recordingid);
                 id = '' + elementid.replace(data.action, action) + '-' + data.recordingid;
-                link.setAttribute('id', id);
-                button = link.one('> i');
+                link.attr('id', id);
+                button = link.find('i');
                 if (button === null) {
                     // For backward compatibility.
-                    button = link.one('> img');
+                    button = link.find('img');
                 }
-                button.removeAttribute('id');
+                button.removeAttr('id');
             },
 
             elementId: function (action, target) {
@@ -227,17 +227,17 @@ define(['jquery', 'core/yui', 'core/notification', 'core/str'],
             },
 
             reloadPreview: function (recordingid) {
-                var thumbnails = Y.one('#preview-' + recordingid).all('> img');
+                var thumbnails = Y.one('#preview-' + recordingid).find('img');
                 thumbnails.each(function (thumbnail) {
-                    var thumbnailsrc = thumbnail.getAttribute('src');
+                    var thumbnailsrc = thumbnail.attr('src');
                     thumbnailsrc = thumbnailsrc.substring(0, thumbnailsrc.indexOf('?'));
                     thumbnailsrc += '?' + new Date().getTime();
-                    thumbnail.setAttribute('src', thumbnailsrc);
+                    thumbnail.attr('src', thumbnailsrc);
                 });
             },
 
-            capitalize: function (string) {
-                return string.charAt(0).toUpperCase() + string.slice(1);
+            capitalize: function (s) {
+                return s.charAt(0).toUpperCase() + s.slice(1);
             },
 
             alertError: function (message, title) {
