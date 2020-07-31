@@ -118,7 +118,7 @@ define(['core/yui', 'core/notification'],
                     return;
                 }
                 elementid = this.elementId(data.action, data.target);
-                link = Y.one('a#' + elementid + '-' + data.recordingid);
+                link = yui.one('a#' + elementid + '-' + data.recordingid);
                 link.setAttribute('data-action', action);
                 linkdataonclick = link.getAttribute('data-onclick').replace(this.capitalize(data.action), this.capitalize(action));
                 link.setAttribute('data-onclick', linkdataonclick);
