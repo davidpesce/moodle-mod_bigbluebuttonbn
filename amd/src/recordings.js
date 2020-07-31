@@ -219,6 +219,9 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers',
              */
             recordingActionPerformedComplete: function (e, data) {
                 var self = this;
+                console.log(e);
+                console.log(e[data.source]);
+                console.log(data.goalstate);
                 var stringsToRetrieve = [
                     {
                         key: 'view_error_current_state_not_found',
