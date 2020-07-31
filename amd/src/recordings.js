@@ -235,7 +235,7 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers',
                         }
                         // Evaluates if the state is as expected.
                         if (responsestate[data.source] === data.goalstate) {
-                            self.recordingActionCompletion(data);
+                            //self.recordingActionCompletion(data);
                             return true;
                         }
                         return false;
