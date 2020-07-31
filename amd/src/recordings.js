@@ -218,32 +218,19 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers',
              * @returns {boolean}
              */
             recordingActionPerformedComplete: function (responsestate, data) {
-                var self = this;
-                var stringsToRetrieve = [
-                    {
-                        key: 'view_error_current_state_not_found',
-                        component: 'bigbluebuttonbn'
-                    }
-                ];
-                str.get_strings(stringsToRetrieve)
-                    .then(function (s) {
-                        // Something went wrong.
-                        if (typeof responsestate[data.source] === 'undefined') {
-                            data.message = s[0];
-                            self.recordingActionFailover(data);
-                            return true;
-                        }
-                        // Evaluates if the state is as expected.
-                        if (responsestate[data.source] === data.goalstate) {
-                            console.log('desired state and goal state are equal');
-                            self.recordingActionCompletion(data);
-                            return true;
-                        }
-                        return false;
-                    })
-                    .then(function(result){
-                        return result;
-                    });
+                // Something went wrong.
+                if (typeof responsestate[data.source] === 'undefined') {
+                    data.message = M.util.get_string('view_error_current_state_not_found', 'bigbluebuttonbn');
+                    self.recordingActionFailover(data);
+                    return true;
+                }
+                // Evaluates if the state is as expected.
+                if (responsestate[data.source] === data.goalstate) {
+                    console.log('desired state and goal state are equal');
+                    self.recordingActionCompletion(data);
+                    return true;
+                }
+                return false;
             },
 
             /**
