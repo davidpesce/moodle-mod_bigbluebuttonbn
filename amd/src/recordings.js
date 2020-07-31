@@ -183,6 +183,7 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers',
                     url: datasource + qs
                 })
                     .done(function (response) {
+                        console.log(response);
                         // Evaluates if the current attempt has been completed.
                         if (self.recordingActionPerformedComplete(response, data)) {
                             // It has been completed, so stop the action.
