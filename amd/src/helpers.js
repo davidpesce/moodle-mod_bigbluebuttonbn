@@ -65,7 +65,7 @@ define(['jquery', 'core/yui', 'core/notification', 'core/str'],
                     .done(function (s) {
                         elementid = self.elementId(data.action, data.target);
                         link = $('#' + elementid + '-' + data.recordingid);
-                        console.log(link);
+                        link.remove();
                         link.attr('data-action', reversedaction);
                         buttondatatext = s[0];
                         buttondatatag = elementTag[reversedaction];
