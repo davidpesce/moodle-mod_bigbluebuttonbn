@@ -160,7 +160,7 @@ define(['jquery', 'core/yui', 'core/notification', 'core/str'],
             },
 
             reloadPreview: function (recordingid) {
-                var thumbnails = Y.one('#preview-' + recordingid).find('img');
+                var thumbnails = $('#preview-' + recordingid).find('img');
                 thumbnails.each(function (thumbnail) {
                     var thumbnailsrc = thumbnail.attr('src');
                     thumbnailsrc = thumbnailsrc.substring(0, thumbnailsrc.indexOf('?'));
