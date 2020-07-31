@@ -64,9 +64,16 @@ define(['jquery', 'core/yui', 'core/notification', 'core/str'],
                 Str.get_strings(stringsToRetrieve)
                     .then(function (s) {
                         elementid = self.elementId(data.action, data.target);
+
+                        //Reverse the data-action.
                         link = $('#' + elementid + '-' + data.recordingid);
                         link.attr('data-action', reversedaction);
 
+                        //Reverse the action in the ID.
+                        id = '' + elementid.replace(data.action, reversedaction) + '-' + data.recordingid;
+                        link.attr('id', id);
+
+                        //Reverse the action icon.
                         buttondatatext = s[0];
                         buttondatatag = elementTag[reversedaction];
 
@@ -79,16 +86,6 @@ define(['jquery', 'core/yui', 'core/notification', 'core/str'],
                         button.attr('data-aria-label', buttondatatext);
                         button.attr('data-title', buttondatatext);
                         button.attr('data-class', elementFaClass[reversedaction]);
-
-                        //update the ID
-                        id = '' + elementid.replace(data.action, reversedaction) + '-' + data.recordingid;
-                        link.attr('id', id);
-                        button = link.find('i');
-                        if (button === null) {
-                            // For backward compatibility.
-                            button = link.find('img');
-                        }
-                        button.removeAttr('id');
                     });
             },
 
