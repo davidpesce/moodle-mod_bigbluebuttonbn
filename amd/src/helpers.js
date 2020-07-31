@@ -43,74 +43,6 @@ define(['jquery', 'core/yui', 'core/notification', 'core/str'],
                 elementActionReversed = this.initElementActionReversed();
             },
 
-            toggleSpinningWheelOn: function (data) {
-                var elementid, link, button, text;
-                elementid = this.elementId(data.action, data.target);
-                text = M.util.get_string('view_recording_list_action_' + data.action, 'bigbluebuttonbn');
-                link = yui.one('a#' + elementid + '-' + data.recordingid);
-                link.setAttribute('data-onclick', link.getAttribute('onclick'));
-                link.setAttribute('onclick', '');
-                button = link.one('> i');
-                if (button === null) {
-                    // For backward compatibility.
-                    this.toggleSpinningWheelOnCompatible(link, text);
-                    return;
-                }
-                button.setAttribute('data-aria-label', button.getAttribute('aria-label'));
-                button.setAttribute('aria-label', text);
-                button.setAttribute('data-title', button.getAttribute('title'));
-                button.setAttribute('title', text);
-                button.setAttribute('data-class', button.getAttribute('class'));
-                button.setAttribute('class', this.elementFaClass.process);
-            },
-
-            toggleSpinningWheelOnCompatible: function (link, text) {
-                var button = link.one('> img');
-                if (button === null) {
-                    // Button doesn't even have an icon.
-                    return;
-                }
-                button.setAttribute('data-alt', button.getAttribute('alt'));
-                button.setAttribute('alt', text);
-                button.setAttribute('data-title', button.getAttribute('title'));
-                button.setAttribute('title', text);
-                button.setAttribute('data-src', button.getAttribute('src'));
-                button.setAttribute('src', 'pix/i/processing16.gif');
-            },
-
-            toggleSpinningWheelOff: function (data) {
-                var elementid, link, button;
-                elementid = this.elementId(data.action, data.target);
-                link = yui.one('a#' + elementid + '-' + data.recordingid);
-                link.setAttribute('onclick', link.getAttribute('data-onclick'));
-                link.removeAttribute('data-onclick');
-                button = link.one('> i');
-                if (button === null) {
-                    // For backward compatibility.
-                    this.toggleSpinningWheelOffCompatible(link.one('> img'));
-                    return;
-                }
-                button.setAttribute('aria-label', button.getAttribute('data-aria-label'));
-                button.removeAttribute('data-aria-label');
-                button.setAttribute('title', button.getAttribute('data-title'));
-                button.removeAttribute('data-title');
-                button.setAttribute('class', button.getAttribute('data-class'));
-                button.removeAttribute('data-class');
-            },
-
-            toggleSpinningWheelOffCompatible: function (button) {
-                if (button === null) {
-                    // Button doesn't have an icon.
-                    return;
-                }
-                button.attr('alt', button.attr('data-alt'));
-                button.removeAttr('data-alt');
-                button.attr('title', button.attr('data-title'));
-                button.removeAttr('data-title');
-                button.attr('src', button.attr('data-src'));
-                button.removeAttr('data-src');
-            },
-
             updateData: function (data) {
                 var self = this;
                 var action, elementid, link, linkdataonclick, button, buttondatatext, buttondatatag;
@@ -128,6 +60,7 @@ define(['jquery', 'core/yui', 'core/notification', 'core/str'],
                     .done(function (s) {
                         elementid = self.elementId(data.action, data.target);
                         link = $('a#' + elementid + '-' + data.recordingid);
+
                         link.attr('data-action', action);
 
                         linkdataonclick = link.attr('data-onclick').replace(self.capitalize(data.action), self.capitalize(action));
