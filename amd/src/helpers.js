@@ -75,7 +75,6 @@ define(['jquery', 'core/yui', 'core/notification', 'core/str'],
 
                         //Reverse the action icon.
                         buttondatatext = s[0];
-
                         button = link.find('i');
                         button.attr('aria-label', buttondatatext);
                         button.attr('title', buttondatatext);
