@@ -226,7 +226,7 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers',
                     }
                 ];
                 str.get_strings(stringsToRetrieve)
-                    .done(function (s) {
+                    .then(function (s) {
                         // Something went wrong.
                         if (typeof responsestate[data.source] === 'undefined') {
                             data.message = s[0];
@@ -236,10 +236,13 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers',
                         // Evaluates if the state is as expected.
                         if (responsestate[data.source] === data.goalstate) {
                             console.log('desired state and goal state are equal');
-                            //self.recordingActionCompletion(data);
+                            self.recordingActionCompletion(data);
                             return true;
                         }
                         return false;
+                    })
+                    .then(function(result){
+                        return result;
                     });
             },
 
