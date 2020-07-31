@@ -185,6 +185,7 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers',
                     .done(function (response) {
                         console.log(response);
                         // Evaluates if the current attempt has been completed.
+                        console.log(self.recordingActionPerformedComplete(response, data));
                         if (self.recordingActionPerformedComplete(response, data)) {
                             // It has been completed, so stop the action.
                             return;
@@ -213,15 +214,12 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers',
             /**
              * Determines if the action performed has completed.
              *
-             * @param e
+             * @param responsestate
              * @param {Object} data
              * @returns {boolean}
              */
-            recordingActionPerformedComplete: function (e, data) {
+            recordingActionPerformedComplete: function (responsestate, data) {
                 var self = this;
-                //console.log(e);
-                console.log(e);
-                console.log(data.goalstate);
                 var stringsToRetrieve = [
                     {
                         key: 'view_error_current_state_not_found',
@@ -231,13 +229,13 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers',
                 str.get_strings(stringsToRetrieve)
                     .done(function (s) {
                         // Something went wrong.
-                        if (typeof e[data.source] === 'undefined') {
+                        if (typeof responsestate === 'undefined') {
                             data.message = s[0];
                             self.recordingActionFailover(data);
                             return true;
                         }
                         // Evaluates if the state is as expected.
-                        if (e[data.source] === data.goalstate) {
+                        if (responsestate === data.goalstate) {
                             self.recordingActionCompletion(data);
                             return true;
                         }
