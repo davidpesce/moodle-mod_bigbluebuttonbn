@@ -42,7 +42,7 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers',
 
         var Recordings = {
             /**
-            * Initialize recording display. Set onclick handlers for publish, unpublish, delete, protect.
+            * Initialize recording display. Set onclick handlers for publish, unpublish, delete, update, or protect.
             */
             init: function () {
                 var self = this;
@@ -52,6 +52,20 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers',
                 $('[id^=recording-delete-]').each(function (i, val) {
                     $(val).click(function () {
                         self.recordingDelete(val);
+                    });
+                });
+
+                //Add onclick event listeners to publish.
+                $('[id^=recording-unpublish-]').each(function (i, val) {
+                    $(val).click(function () {
+                        self.recordingUnpublish(val);
+                    });
+                });
+
+                //Add onclick event listeners to publish.
+                $('[id^=recording-publish-]').each(function (i, val) {
+                    $(val).click(function () {
+                        self.recordingPublish(val);
                     });
                 });
 
@@ -108,7 +122,7 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers',
             },
 
             /**
-             * Perform the requested recording action (delete, publish/unpublish, update, or protect.
+             * Perform the requested recording action.
              *
              * @param {Object} data
              */
@@ -204,18 +218,27 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers',
              */
             recordingActionPerformedComplete: function (e, data) {
                 var self = this;
-                // Something went wrong.
-                if (typeof e[data.source] === 'undefined') {
-                    data.message = str.get_string('view_error_current_state_not_found', 'bigbluebuttonbn');
-                    self.recordingActionFailover(data);
-                    return true;
-                }
-                // Evaluates if the state is as expected.
-                if (e[data.source] === data.goalstate) {
-                    self.recordingActionCompletion(data);
-                    return true;
-                }
-                return false;
+                var stringsToRetrieve = [
+                    {
+                        key: 'view_error_current_state_not_found',
+                        component: 'bigbluebuttonbn'
+                    }
+                ];
+                str.get_strings(stringsToRetrieve)
+                    .done(function (s) {
+                        // Something went wrong.
+                        if (typeof e[data.source] === 'undefined') {
+                            data.message = s[0];
+                            self.recordingActionFailover(data);
+                            return true;
+                        }
+                        // Evaluates if the state is as expected.
+                        if (e[data.source] === data.goalstate) {
+                            self.recordingActionCompletion(data);
+                            return true;
+                        }
+                        return false;
+                    });
             },
 
             /**
@@ -475,21 +498,12 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers',
                 if (data.action === 'delete') {
                     str.get_strings(stringsToRetrieve)
                         .done(function (s) {
-                            //row = Y.one('div#recording-actionbar-' + data.recordingid).ancestor('td').ancestor('tr');
                             row = $('div#recording-actionbar-' + data.recordingid).closest('td').closest('tr');
-
-                            //table = row.ancestor('tbody');
                             table = row.closest('tbody');
 
-                            //if (table.all('tr').size() === 1) {
                             if (table.children('tr').length) {
-                                //container = Y.one('#bigbluebuttonbn_view_recordings_content');
                                 container = $('#bigbluebuttonbn_view_recordings_content');
-
-                                //container.prepend('<span>' + s + '</span>');
                                 container.before('<span>' + s + '</span>');
-
-                                //container.one('#bigbluebuttonbn_recordings_table').remove();
                                 $('#bigbluebuttonbn_recordings_table').remove();
                                 return;
                             }
