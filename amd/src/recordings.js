@@ -183,7 +183,6 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers',
                     url: datasource + qs
                 })
                     .done(function (response) {
-                        console.log(response);
                         // Evaluates if the current attempt has been completed.
                         console.log(self.recordingActionPerformedComplete(response, data));
                         if (self.recordingActionPerformedComplete(response, data)) {
@@ -229,7 +228,6 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers',
                 str.get_strings(stringsToRetrieve)
                     .done(function (s) {
                         console.log(responsestate);
-                        console.log(data.goalstate);
                         // Something went wrong.
                         if (typeof responsestate === 'undefined') {
                             data.message = s[0];
@@ -239,7 +237,6 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers',
                         // Evaluates if the state is as expected.
                         if (responsestate === data.goalstate) {
                             self.recordingActionCompletion(data);
-                            console.log('IT"S COMPLETE');
                             return true;
                         }
                         return false;
