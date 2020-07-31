@@ -60,7 +60,7 @@ define(['jquery', 'core/yui', 'core/notification', 'core/str'],
                     .done(function (s) {
                         elementid = self.elementId(data.action, data.target);
                         console.log(elementid);
-                        link = $('a#' + elementid + '-' + data.recordingid);
+                        link = $('#' + elementid + '-' + data.recordingid);
 
                         link.attr('data-action', action);
 
