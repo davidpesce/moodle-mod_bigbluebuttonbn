@@ -50,7 +50,7 @@ define(['jquery', 'core/yui', 'core/notification', 'core/str'],
              */
             updateData: function (data) {
                 var self = this;
-                var reversedaction, elementid, link, button, buttondatatext, buttondatatag, id;
+                var reversedaction, elementid, link, button, buttondatatext, id;
                 reversedaction = elementActionReversed[data.action];
                 if (reversedaction === data.action) {
                     return;
@@ -75,29 +75,12 @@ define(['jquery', 'core/yui', 'core/notification', 'core/str'],
 
                         //Reverse the action icon.
                         buttondatatext = s[0];
-                        buttondatatag = elementTag[reversedaction];
 
                         button = link.find('i');
-                        if (button === null) {
-                            // For backward compatibility.
-                            this.updateDataCompatible(link.find('img'), elementTag[data.action], buttondatatag, buttondatatext);
-                            return;
-                        }
                         button.attr('aria-label', buttondatatext);
                         button.attr('title', buttondatatext);
                         button.attr('class', elementFaClass[reversedaction]);
                     });
-            },
-
-            updateDataCompatible: function (button, action, buttondatatag, buttondatatext) {
-                if (button === null) {
-                    // Button doesn't have an icon.
-                    return;
-                }
-                var buttondatasrc = button.attr('data-src');
-                button.attr('data-alt', buttondatatext);
-                button.attr('data-title', buttondatatext);
-                button.attr('data-src', buttondatasrc.replace(buttondatatag, action));
             },
 
             elementId: function (action, target) {
