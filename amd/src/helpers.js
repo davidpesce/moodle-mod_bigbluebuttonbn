@@ -50,14 +50,14 @@ define(['jquery', 'core/yui', 'core/notification', 'core/str'],
              */
             updateData: function (data) {
                 var self = this;
-                var action, elementid, link, linkdataonclick, button, buttondatatext, buttondatatag;
-                action = elementActionReversed[data.action];
-                if (action === data.action) {
+                var reversedaction, elementid, link, button, buttondatatext, buttondatatag;
+                reversedaction = elementActionReversed[data.action];
+                if (reversedaction === data.action) {
                     return;
                 }
                 var stringsToRetrieve = [
                     {
-                        key: 'view_recording_list_actionbar_' + action,
+                        key: 'view_recording_list_actionbar_' + reversedaction,
                         component: 'bigbluebuttonbn'
                     }
                 ];
@@ -67,13 +67,9 @@ define(['jquery', 'core/yui', 'core/notification', 'core/str'],
                         console.log(elementid);
                         console.log(data.recordingid);
                         link = $('#' + elementid + '-' + data.recordingid);
-                        link.attr('data-action', action);
-
-                        //linkdataonclick = link.attr('data-onclick').replace(self.capitalize(data.action), self.capitalize(action));
-                        //link.attr('data-onclick', linkdataonclick);
-                        
+                        link.attr('data-action', reversedaction);
                         buttondatatext = s[0];
-                        buttondatatag = elementTag[action];
+                        buttondatatag = elementTag[reversedaction];
 
                         button = link.find('i');
                         if (button === null) {
@@ -83,7 +79,7 @@ define(['jquery', 'core/yui', 'core/notification', 'core/str'],
                         }
                         button.attr('data-aria-label', buttondatatext);
                         button.attr('data-title', buttondatatext);
-                        button.attr('data-class', elementFaClass[action]);
+                        button.attr('data-class', elementFaClass[reversedaction]);
 
                     });
             },
