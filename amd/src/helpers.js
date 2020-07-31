@@ -50,7 +50,7 @@ define(['jquery', 'core/yui', 'core/notification', 'core/str'],
              */
             updateData: function (data) {
                 var self = this;
-                var reversedaction, elementid, link, button, buttondatatext, buttondatatag;
+                var reversedaction, elementid, link, button, buttondatatext, buttondatatag, id;
                 reversedaction = elementActionReversed[data.action];
                 if (reversedaction === data.action) {
                     return;
@@ -62,7 +62,7 @@ define(['jquery', 'core/yui', 'core/notification', 'core/str'],
                     }
                 ];
                 Str.get_strings(stringsToRetrieve)
-                    .done(function (s) {
+                    .then(function (s) {
                         elementid = self.elementId(data.action, data.target);
                         link = $('#' + elementid + '-' + data.recordingid);
                         link.attr('data-action', reversedaction);
@@ -80,6 +80,15 @@ define(['jquery', 'core/yui', 'core/notification', 'core/str'],
                         button.attr('data-title', buttondatatext);
                         button.attr('data-class', elementFaClass[reversedaction]);
 
+                        //update the ID
+                        id = '' + elementid.replace(data.action, reversedaction) + '-' + data.recordingid;
+                        link.attr('id', id);
+                        button = link.find('i');
+                        if (button === null) {
+                            // For backward compatibility.
+                            button = link.find('img');
+                        }
+                        button.removeAttr('id');
                     });
             },
 
@@ -92,24 +101,6 @@ define(['jquery', 'core/yui', 'core/notification', 'core/str'],
                 button.attr('data-alt', buttondatatext);
                 button.attr('data-title', buttondatatext);
                 button.attr('data-src', buttondatasrc.replace(buttondatatag, action));
-            },
-
-            updateId: function (data) {
-                var action, elementid, link, button, id;
-                action = elementActionReversed[data.action];
-                if (action === data.action) {
-                    return;
-                }
-                elementid = this.elementId(data.action, data.target);
-                link = $('a#' + elementid + '-' + data.recordingid);
-                id = '' + elementid.replace(data.action, action) + '-' + data.recordingid;
-                link.attr('id', id);
-                button = link.find('i');
-                if (button === null) {
-                    // For backward compatibility.
-                    button = link.find('img');
-                }
-                button.removeAttr('id');
             },
 
             elementId: function (action, target) {

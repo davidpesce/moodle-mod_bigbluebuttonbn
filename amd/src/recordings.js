@@ -184,7 +184,6 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers',
                 })
                     .done(function (response) {
                         // Evaluates if the current attempt has been completed.
-                        console.log(self.recordingActionPerformedComplete(response, data));
                         if (self.recordingActionPerformedComplete(response, data)) {
                             // It has been completed, so stop the action.
                             return;
@@ -226,7 +225,6 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers',
                 }
                 // Evaluates if the state is as expected.
                 if (responsestate[data.source] === data.goalstate) {
-                    console.log('desired state and goal state are equal');
                     this.recordingActionCompletion(data);
                     return true;
                 }
@@ -515,7 +513,6 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers',
                     return;
                 }
                 Helpers.updateData(data);
-                Helpers.updateId(data);
                 if (data.action === 'publish') {
                     this.recordingPublishCompletion(data.recordingid);
                     return;
