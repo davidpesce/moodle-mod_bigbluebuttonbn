@@ -42,7 +42,7 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers',
 
         var Recordings = {
             /**
-            * Initialize recording display. Set onclick handlers for publish, unpublish, delete, update, or protect.
+            * Initialize recording display. Set onclick handlers for publish, un-publish, delete, update, or protect.
             */
             init: function () {
                 var self = this;
@@ -55,7 +55,7 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers',
                     });
                 });
 
-                //Add onclick event listeners to publish.
+                //Add onclick event listeners to un-publish.
                 $('[id^=recording-unpublish-]').each(function (i, val) {
                     $(val).click(function () {
                         self.recordingUnpublish(val);
@@ -138,7 +138,7 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers',
                     url: datasource + qs
                 })
                     .done(function (response) {
-                        // There is no need for verification.
+                        // There is no need to verify the state.
                         if (typeof data.goalstate === 'undefined') {
                             return self.recordingActionCompletion(data);
                         }
@@ -545,9 +545,9 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers',
             },
 
             recordingPublishCompletion: function (recordingid) {
-                var playbacks = Y.one('#playbacks-' + recordingid);
+                var playbacks = $('#playbacks-' + recordingid);
                 playbacks.show();
-                var preview = Y.one('#preview-' + recordingid);
+                var preview = $('#preview-' + recordingid);
                 if (preview === null) {
                     return;
                 }
@@ -556,9 +556,9 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers',
             },
 
             recordingUnpublishCompletion: function (recordingid) {
-                var playbacks = Y.one('#playbacks-' + recordingid);
+                var playbacks = $('#playbacks-' + recordingid);
                 playbacks.hide();
-                var preview = Y.one('#preview-' + recordingid);
+                var preview = $('#preview-' + recordingid);
                 if (preview === null) {
                     return;
                 }
