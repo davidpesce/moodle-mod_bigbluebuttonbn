@@ -44,7 +44,7 @@ define(['jquery', 'core/yui', 'core/notification', 'core/str'],
             },
 
             /**
-             * Update the DOM
+             * Update the DOM.
              *
              * @param {Object} data
              */
@@ -69,7 +69,7 @@ define(['jquery', 'core/yui', 'core/notification', 'core/str'],
                         console.log(elementid);
 
                         link = $('#' + elementid + '-' + data.recordingid);
-                        console.log(reversedaction);
+                        console.log(link.length);
 
                         link.attr('data-action', reversedaction);
 
