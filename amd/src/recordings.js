@@ -227,15 +227,15 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers',
                 ];
                 str.get_strings(stringsToRetrieve)
                     .done(function (s) {
-                        console.log(data.goalstate);
+                        console.log(responsestate[data.source]);
                         // Something went wrong.
-                        if (typeof responsestate === 'undefined') {
+                        if (typeof responsestate[data.source] === 'undefined') {
                             data.message = s[0];
                             self.recordingActionFailover(data);
                             return true;
                         }
                         // Evaluates if the state is as expected.
-                        if (responsestate === data.goalstate) {
+                        if (responsestate[data.source] === data.goalstate) {
                             self.recordingActionCompletion(data);
                             return true;
                         }
