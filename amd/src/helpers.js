@@ -60,8 +60,8 @@ define(['jquery', 'core/yui', 'core/notification', 'core/str'],
                     .done(function (s) {
                         elementid = self.elementId(data.action, data.target);
                         console.log(elementid);
+                        console.log(data.recordingid);
                         link = $('#' + elementid + '-' + data.recordingid);
-
                         link.attr('data-action', action);
 
                         linkdataonclick = link.attr('data-onclick').replace(self.capitalize(data.action), self.capitalize(action));
