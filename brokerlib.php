@@ -742,7 +742,6 @@ function bigbluebuttonbn_broker_required_parameters() {
         'id' => 'The meetingID must be specified.'
     ];
     $params['meeting_info'] = [
-        //'callback' => 'This request must include a javascript callback.',
         'id' => 'The meetingID must be specified.'
     ];
     $params['meeting_end'] = [
@@ -760,11 +759,9 @@ function bigbluebuttonbn_broker_required_parameters() {
         'id' => 'The recordingID must be specified.'
     ];
     $params['recording_publish'] = [
-        'callback' => 'This request must include a javascript callback.',
         'id' => 'The recordingID must be specified.'
     ];
     $params['recording_unpublish'] = [
-        'callback' => 'This request must include a javascript callback.',
         'id' => 'The recordingID must be specified.'
     ];
     $params['recording_delete'] = [
