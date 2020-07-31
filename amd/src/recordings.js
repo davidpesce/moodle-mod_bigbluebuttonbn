@@ -221,13 +221,13 @@ define(['jquery', 'core/config', 'core/str', 'mod_bigbluebuttonbn/helpers',
                 // Something went wrong.
                 if (typeof responsestate[data.source] === 'undefined') {
                     data.message = M.util.get_string('view_error_current_state_not_found', 'bigbluebuttonbn');
-                    self.recordingActionFailover(data);
+                    this.recordingActionFailover(data);
                     return true;
                 }
                 // Evaluates if the state is as expected.
                 if (responsestate[data.source] === data.goalstate) {
                     console.log('desired state and goal state are equal');
-                    self.recordingActionCompletion(data);
+                    this.recordingActionCompletion(data);
                     return true;
                 }
                 return false;
